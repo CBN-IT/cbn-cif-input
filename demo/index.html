@@ -9,7 +9,7 @@
 	<title>cbn iban validator demo</title>
 
 	<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-	<link rel="import" href="../cbn-iban-input.html">
+	<link rel="import" href="../cbn-cif-input.html">
 
 	<link rel="stylesheet" href="../../paper-styles/paper-styles.html">
 	<link rel="import" href="../../paper-styles/demo-pages.html">
@@ -19,16 +19,16 @@
 <div class="vertical-section-container centered">
 	<h4>Standard</h4>
 	<div class="vertical-section">
-		<cbn-iban-input></cbn-iban-input>
-		<cbn-iban-input auto-validate required label="Auto-validating"></cbn-iban-input>
+		<cbn-cif-input></cbn-cif-input>
+		<cbn-cif-input auto-validate required label="Auto-validating"></cbn-cif-input>
 	</div>
 
 	<h4>Pre-validated</h4>
 	<div class="vertical-section">
-		<cbn-iban-input label="Ro " value="RO08 RNCB 0084 0108 0037 0002" auto-validate></cbn-iban-input>
-		<cbn-iban-input label= "MasterCard" value="RO08 RNCB 0084 0108 0037 0002" auto-validate></cbn-iban-input>
-		<cbn-iban-input label="Discover" value="RO08 RNCB 0084 0108 0037 0002" auto-validate></cbn-iban-input>
-		<cbn-iban-input label="Invalid Discover Card" value="RO08 RNCB 0084 0108 0037 0002" auto-validate></cbn-iban-input>
+		<cbn-cif-input label="Ro " value="31504946" auto-validate></cbn-cif-input>
+		<cbn-cif-input label= "MasterCard" value="RO31504946" auto-validate></cbn-cif-input>
+		<cbn-cif-input label="Discover" value="31504947" auto-validate></cbn-cif-input>
+		<cbn-cif-input label="Invalid Discover Card" value="RO 31504946" auto-validate></cbn-cif-input>
 	</div>
 
 </div>

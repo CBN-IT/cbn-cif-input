@@ -1,5 +1,5 @@
 {
-    "name": "cbn-iban-input",
+    "name": "cbn-cif-input",
     "version": "0.1",
     "private": true,
     "ignore": [
