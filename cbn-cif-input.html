@@ -1,60 +1,62 @@
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
-<link rel="import" href="../paper-input/paper-input-behavior.html">
-<link rel="import" href="../paper-input/paper-input-container.html">
-<link rel="import" href="../paper-input/paper-input-error.html">
-<link rel="import" href="../iron-input/iron-input.html">
-<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../cbn-datepicker/cbn-datepicker.html">
 <!--
-`cbn-cif-input`
+`cbn-cif-input` is a paper input for entering Romanian CIF codes.
 
-    <cbn-cif-input></cbn-cif-input>
-
-### Validation
-
-### Styling
+Usage:
+    <cbn-cif-input label="CIF" url="/get/company" param="cif"></cbn-cif-input>
 
 @demo demo/index.html
 @class cbn-cif-input
 -->
 
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer-reflection/polymer-reflection.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-input/iron-input.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
+
+<link rel="import" href="../cbn-form/lib/include.html" />
+<link rel="import" href="../cbn-form/elements/polymer-elements.html" />
+<link rel="import" href="../cbn-components-i18n-ro/all.html" />
+
 <dom-module id="cbn-cif-input">
-	<style>
-		:host {
-			display: block;
-		}
-	</style>
-		<paper-input-container id="container"
-							   disabled$="[[disabled]]"
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+		
+		<iron-ajax id="ironAjax" url="[[url]]"></iron-ajax>
+		
+		<paper-input-container id="container" disabled$="[[disabled]]"
 							   no-label-float="[[noLabelFloat]]"
 							   always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]"
-							   invalid="[[invalid]]">
-
+							   auto-validate$="[[autoValidate]]" invalid="[[invalid]]">
+			
 			<label hidden$="[[!label]]">[[label]]</label>
-
-			<div class="horizontal layout">
-				<input is="iron-input" id="input"
-					   aria-labelledby$="[[_ariaLabelledBy]]"
-					   aria-describedby$="[[_ariaDescribedBy]]"
-					   bind-value="{{value}}"
-					   type="text"
-					   required$="[[required]]"
-					   name$="[[name]]"
-					   disabled$="[[disabled]]"
-					   invalid="{{invalid}}"
-					   autofocus$="[[autofocus]]"
-					   inputmode$="[[inputmode]]"
-					   placeholder$="[[placeholder]]"
-					   readonly$="[[readonly]]"
-					   size$="[[size]]">
-			</div>
-
+			
+			<input is="iron-input" id="input" name$="[[name]]"
+				   aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]"
+				   disabled$="[[disabled]]" bind-value="{{value}}" required$="[[required]]"
+				   readonly$="[[readonly]]" invalid="{{invalid}}" type="text"
+				   pattern$="[[pattern]]" placeholder$="[[placeholder]]" 
+				   autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]"
+				   minlength$="[[minlength]]" maxlength$="[[maxlength]]" size$="[[size]]"
+				   autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]"
+				   default-value="[[defaultValue]]"
+				   validation="[[validation]]"
+				   validation-order="[[validationOrder]]"
+				   validation-type="[[validationType]]"
+				   default-validation-message="[[defaultValidationMessage]]"
+			>
+			
 			<template is="dom-if" if="[[errorMessage]]">
 				<paper-input-error>[[errorMessage]]</paper-input-error>
 			</template>
-
+			
 		</paper-input-container>
 	</template>
 </dom-module>
@@ -63,46 +65,167 @@
 	(function () {
 		Polymer({
 			is: 'cbn-cif-input',
+			
+			properties: {
+				
+				value: {
+					type: String,
+					value: '',
+					observer: '_valueChanged'
+				},
+				
+				/**
+				 * The server URL to use for validating / fetching CIF information.
+				 */
+				url: {
+					type: String,
+					value: ''
+				},
+				
+				/**
+				 * The GET parameter to use for the AJAX request that will contain the value to fetch.
+				 */
+				parameter: {
+					type: String,
+					value: 'cif'
+				},
+				
+				/**
+				 * The debounce timeout to use for issuing verification requests to the server when the input changes.
+				 */
+				debounceInterval: {
+					type: Number,
+					value: 100
+				},
+				
+				/**
+				 * The iron-ajax instance used to issue requests to the server.
+				 * 
+				 * By default, the internal AJAX is used. If an `iron-ajax` is specified as light DOM child, it will 
+				 * be used instead.
+				 */
+				ironAjax: {
+					type: Object,
+					value: null,
+					observer: '_initIronAjax'
+				},
+				
+				/**
+				 * Stores the last value that is set before the component is fully initialized.
+				 */
+				_delayedValue: {
+					type: String,
+					value: ''
+				}
+				
+			},
+			
 			behaviors: [
 				Polymer.PaperInputBehavior,
-				Polymer.IronValidatableBehavior,
-				Polymer.IronFormElementBehavior
+				CbnForm.PaperContainer,
+				CbnForm.DynamicElement
 			],
-			properties: {
-				/**
-				 * The label for this input.
-				 */
-				label: {
-					type: String,
-					value: "Iban"
-				},
-				/**
-				 * 
-				 */
-				nume: {
-					type: Object,
-					value: function () {
-						return {};
-					},
-					notify: true,
-					readOnly: false,
-					reflectToAttribute: false,
-					observer: "_numeChanged"
-				},
-
-
-				value: {
-					observer: '_onValueChanged'
+			
+			ready: function () {
+				if (!this.ironAjax)
+					this.ironAjax = this.$.ironAjax;
+			},
+			
+			/**
+			 * Called when the element's light DOM children are fully accessible.
+			 */
+			attached: function() {
+				if (Polymer.dom(this).children.length) {
+					this._findIronAjax();
+				} else {
+					this.async(function () {
+						this._findIronAjax();
+					});
 				}
 			},
-			observers: [
-				'_onFocusedChanged(focused)'
-			],
-			ready: function () {
+			
+			/**
+			 * Tries to find and use the `iron-ajax` light child element.
+			 */
+			_findIronAjax: function() {
+				var ironAjax = Polymer.dom(this).querySelector('iron-ajax');
+				if (ironAjax) {
+					this.ironAjax = ironAjax;
+				}
 			},
-			_onValueChanged: function(){
+			
+			/**
+			 * Observer for the ironAjax property. Initializes the new `iron-ajax` reference that has been set.
+			 */
+			_initIronAjax: function (curVal, oldVal) {
+				if (oldVal) {
+					this.unlisten(oldVal, 'response', '_ajaxResponse');
+				}
+				if (curVal) {
+					this.listen(curVal, 'response', '_ajaxResponse');
+					
+					if (this._delayedValue) {
+						this.value = this._delayedValue;
+						this._delayedValue = '';
+						this._valueChanged();
+					}
+				}
+			},
+			
+			/**
+			 * Input value changed observer.
+			 * Validates the value, if valid, fetches the details about it from the server.
+			 */
+			_valueChanged: function() {
+				if (!this.ironAjax) {
+					this._delayedValue = this.value;
+					return;
+				};
+				this.debounce('cifInputValue', function() {
+					if (!this.ironAjax) return; // just to be sure...
+					if (!CbnForm.Validator.Ro.validateCompany(this.value) || this.value.match(/^(ro)?0*$/i))
+						return; // does not validate
+					
+					if (!this.ironAjax.params)
+						this.ironAjax.params = {};
+					this.ironAjax.set('params.' + this.parameter, this.value.replace(/\D/g, ''));
+					var req = this.ironAjax.generateRequest();
+					req._inputValue = this.value;
+					
+				}, this.debounceInterval);
+			},
+			
+			/**
+			 * Called when the server responds to the value verification requests.
+			 * 
+			 * @param {Object} event The iron-ajax response event object.
+			 */
+			_ajaxResponse: function(event) {
+				var req = event.detail;
+				if (req._inputValue != this.value) 
+					return; // the request was superseded
 				
+				var response = req.response;
+				if (!response) return;
+				
+				if (response.cifFirma.toLowerCase().indexOf("ro") != -1 || this.value.toLowerCase().indexOf("ro") != -1) {
+					response.cifFirma = "RO" + this.value.replace(/[^0-9]/g,"");
+				} else {
+					response.cifFirma = this.value.replace(/[^0-9]/g,"");
+				}
+				
+				this.fire('cbn-cif-response', {
+					value: this.value,
+					response: response
+				});
 			}
-		})
+			
+		});
+		
+		CbnForm.registerElement('cbn-cif-input', {
+			types: ['cif'],
+			priority: 3
+		});
+		
 	})();
 </script>
