@@ -188,13 +188,13 @@ Usage:
 					this._delayedValue = this.value;
 					return;
 				}
-				if(!this._validate()){
+				if (!this._validate()) {
 					return;
 				}
 				
 				this.debounce('cifInputValue', function() {
 					if (!this.ironAjax) return; // just to be sure...
-					if(!this._validate()){
+					if (!this._validate()) {
 						return;
 					}
 					var paramValue = this.value.replace(/\D/g, '');
