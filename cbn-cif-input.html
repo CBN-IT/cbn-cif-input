@@ -79,7 +79,7 @@ Usage:
 				 */
 				url: {
 					type: String,
-					value: ''
+					value: 'https://cbn-firme.appspot.com/risco/GetFirma'
 				},
 				
 				/**
@@ -219,10 +219,10 @@ Usage:
 				var response = req.response;
 				if (!response) return;
 				
-				if (response.cifFirma.toLowerCase().indexOf("ro") != -1 || this.value.toLowerCase().indexOf("ro") != -1) {
-					response.cifFirma = "RO" + this.value.replace(/[^0-9]/g,"");
+				if (response["CUI"].toLowerCase().indexOf("ro") != -1 || this.value.toLowerCase().indexOf("ro") != -1) {
+					response["CUI"] = "RO" + this.value.replace(/[^0-9]/g,"");
 				} else {
-					response.cifFirma = this.value.replace(/[^0-9]/g,"");
+					response["CUI"] = this.value.replace(/[^0-9]/g,"");
 				}
 				
 				this.fire('cbn-cif-response', {
