@@ -180,7 +180,7 @@ Usage:
 				if (!this.ironAjax) {
 					this._delayedValue = this.value;
 					return;
-				};
+				}
 				this.debounce('cifInputValue', function() {
 					if (!this.ironAjax) return; // just to be sure...
 					if (!CbnForm.Validator.Ro.validateCompany(this.value) || this.value.match(/^(ro)?0*$/i))
@@ -218,6 +218,14 @@ Usage:
 					value: this.value,
 					response: response
 				});
+			},
+			/**
+			 * Element's dynamic attributes.
+			 */
+			dynamicAttributes: {
+				"url": { type: 'attribute' },
+				"parameter": { type: 'attribute' },
+				"placeholder": { type: 'attribute' }
 			}
 			
 		});
