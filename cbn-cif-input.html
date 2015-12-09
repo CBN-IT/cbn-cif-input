@@ -188,7 +188,18 @@ Usage:
 					
 					if (!this.ironAjax.params)
 						this.ironAjax.params = {};
-					this.ironAjax.set('params.' + this.parameter, this.value.replace(/\D/g, ''));
+					var paramValue = this.value.replace(/\D/g, '');
+					this.ironAjax.set('params.' + this.parameter, paramValue);
+					var requestEvent = this.fire("cbn-cif-request",{
+							value: this.value, 
+							parameterValue: paramValue, 
+							parameter: this.parameter
+						},{
+							cancelable: true
+						});
+					if (requestEvent.defaultPrevented) {
+						return;
+					}
 					var req = this.ironAjax.generateRequest();
 					req._inputValue = this.value;
 					
