@@ -116,6 +116,13 @@ Usage:
 				_delayedValue: {
 					type: String,
 					value: ''
+				},
+				/**
+				 * Stores the last requested value to prevent double request when we add the RO at the beginning
+				 */
+				_lastRequestedValue: {
+					type: String,
+					value: ''
 				}
 				
 			},
@@ -181,22 +188,25 @@ Usage:
 					this._delayedValue = this.value;
 					return;
 				}
+				if(!this._validate()){
+					return;
+				}
+				
 				this.debounce('cifInputValue', function() {
 					if (!this.ironAjax) return; // just to be sure...
-					if (!CbnForm.Validator.Ro.validateCompany(this.value) || this.value.match(/^(ro)?0*$/i))
-						return; // does not validate
-					
+					if(!this._validate()){
+						return;
+					}
+					var paramValue = this.value.replace(/\D/g, '');
+					this._lastRequestedValue = paramValue;
 					if (!this.ironAjax.params)
 						this.ironAjax.params = {};
-					var paramValue = this.value.replace(/\D/g, '');
 					this.ironAjax.set('params.' + this.parameter, paramValue);
 					var requestEvent = this.fire("cbn-cif-request",{
 							value: this.value, 
 							parameterValue: paramValue, 
 							parameter: this.parameter
-						},{
-							cancelable: true
-						});
+						},{cancelable: true});
 					if (requestEvent.defaultPrevented) {
 						return;
 					}
@@ -204,6 +214,17 @@ Usage:
 					req._inputValue = this.value;
 					
 				}, this.debounceInterval);
+			},
+			_validate:function(){
+				if (!CbnForm.Validator.Ro.validateCompany(this.value) || this.value.match(/^(ro)?0*$/i))
+					return false; // does not validate
+
+				var paramValue = this.value.replace(/\D/g, '');
+				if (paramValue === this._lastRequestedValue) {
+					//this is to prevent double request on the server for the same value; This usually happens when you add RO at the beginning
+					return false;
+				}
+				return true;
 			},
 			
 			/**
