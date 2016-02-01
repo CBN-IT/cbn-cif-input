@@ -223,6 +223,8 @@ Usage:
 				if (paramValue === this._lastRequestedValue) {
 					//this is to prevent double request on the server for the same value; This usually happens when you add RO at the beginning
 					return false;
+				} else {
+					this._lastRequestedValue = paramValue;
 				}
 				return true;
 			},
