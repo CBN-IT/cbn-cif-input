@@ -183,7 +183,10 @@ Usage:
 			 * Input value changed observer.
 			 * Validates the value, if valid, fetches the details about it from the server.
 			 */
-			_valueChanged: function() {
+			_valueChanged: function(_old,_new) {
+				if(_old != undefined && _new != undefined && _old.replace(/\D/g, '') == _new.replace(/\D/g, '')){
+					return;
+				}
 				if (!this.ironAjax) {
 					this._delayedValue = this.value;
 					return;
@@ -194,9 +197,9 @@ Usage:
 				
 				this.debounce('cifInputValue', function() {
 					if (!this.ironAjax) return; // just to be sure...
-					if (!this._validate()) {
+					/*if (!this._validate()) {
 						return;
-					}
+					}*/
 					var paramValue = this.value.replace(/\D/g, '');
 					this._lastRequestedValue = paramValue;
 					if (!this.ironAjax.params)
@@ -220,12 +223,12 @@ Usage:
 					return false; // does not validate
 
 				var paramValue = this.value.replace(/\D/g, '');
-				if (paramValue === this._lastRequestedValue) {
+				/*if (paramValue === this._lastRequestedValue) {
 					//this is to prevent double request on the server for the same value; This usually happens when you add RO at the beginning
 					return false;
 				} else {
 					this._lastRequestedValue = paramValue;
-				}
+				}*/
 				return true;
 			},
 			
