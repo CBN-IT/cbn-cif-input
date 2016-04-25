@@ -244,6 +244,7 @@ Usage:
 				
 				var response = req.response;
 				if (!response) return;
+				if (!response["CUI"]) return;
 				
 				if (response["CUI"].toLowerCase().indexOf("ro") != -1 || this.value.toLowerCase().indexOf("ro") != -1) {
 					response["CUI"] = "RO" + this.value.replace(/[^0-9]/g,"");
