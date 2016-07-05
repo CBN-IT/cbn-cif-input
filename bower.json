@@ -12,9 +12,10 @@
         "index.html"
     ],
     "dependencies": {
-        "polymer": "Polymer/polymer#1.3.1",
-        "paper-input": "PolymerElements/paper-input#1.1.9",
-        "iron-ajax": "PolymerElements/iron-ajax#1.2.0",
+        "polymer": "Polymer/polymer#^1.3.1",
+        "paper-input": "PolymerElements/paper-input#^1.1.9",
+        "iron-ajax": "PolymerElements/iron-ajax#^1.2.0",
+        "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.3.1",
         "cbn-form": "git@bitbucket.org:cbn-it/cbn-form.git#master",
         "cbn-components-i18n-ro": "git@bitbucket.org:cbn-it/cbn-components-i18n-ro.git#master"
     },
