@@ -8,6 +8,7 @@
 	
 	<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 	
+	<link rel="import" href="../../polymer-reflection/polymer-reflection.html" />
 	<link rel="import" href="../cbn-cif-input.html" />
 	<link rel="import" href="../../cbn-form/cbn-form.html" />
 </head>
@@ -20,9 +21,11 @@
 		<form id="demoForm" is="cbn-form" model>
 			<h1>Standard</h1>
 			<div class="section">
-				<cbn-cif-input url="dummy.json" name="cif1" label="CIF"></cbn-cif-input>
-				<cbn-cif-input url="dummy.json" name="cif2" label="CIF (auto validate)" auto-validate 
-							   validation='{ "required": true }' validation='{ "cif": true }'
+				<cbn-cif-input url="dummy.json" name="cif1" label="CIF"
+							   validation='{ "required": true, "cif": true }'
+							></cbn-cif-input>
+				<cbn-cif-input url="dummy.json" name="cif2" label="CIF (auto validate)"
+							   validation='{ "required": true, "cif": true }' auto-validate 
 							   label="Auto-validating"></cbn-cif-input>
 			</div>
 			
