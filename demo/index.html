@@ -5,59 +5,66 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 	<title>Cbn-Cif-Input Demo</title>
-	
+
 	<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-	
-	<link rel="import" href="../../polymer-reflection/polymer-reflection.html" />
-	<link rel="import" href="../cbn-cif-input.html" />
-	<link rel="import" href="../../cbn-form/cbn-form.html" />
+
+	<link rel="import" href="../../polymer-reflection/polymer-reflection.html"/>
+	<link rel="import" href="../cbn-cif-input.html"/>
+	<link rel="import" href="../../cbn-form/cbn-form.html"/>
+
+	<link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+	<link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
 </head>
 <body>
 
 <div style="margin: 20px auto; width: 500px;">
-	
-	<template is="dom-bind">
-		
-		<form id="demoForm" is="cbn-form" model>
-			<h1>Standard</h1>
-			<div class="section">
+
+	<form id="demoForm" is="cbn-form" model>
+		<h1>Standard</h1>
+		<demo-snippet class="centered-demo" style="position:relative">
+			<template is="dom-bind">
 				<cbn-cif-input url="dummy.json" name="cif1" label="CIF"
-							   validation='{ "required": true, "cif": true }'
-							></cbn-cif-input>
+							   validation='{ "required": true, "cif": true }'></cbn-cif-input>
 				<cbn-cif-input url="dummy.json" name="cif2" label="CIF (auto validate)"
-							   validation='{ "required": true, "cif": true }' auto-validate 
+							   validation='{ "required": true, "cif": true }' auto-validate
 							   label="Auto-validating"></cbn-cif-input>
-			</div>
-			
-			<h1>Pre-validated</h1>
-			<div class="section">
+			</template>
+		</demo-snippet>
+		<br/>
+
+		<h1>Pre-validated</h1>
+		<demo-snippet class="centered-demo" style="position:relative">
+			<template is="dom-bind">
 				<cbn-cif-input name="cif_ro" label="Ro" value="31504946" auto-validate></cbn-cif-input>
 				<cbn-cif-input name="cif_mc" label="MasterCard" value="RO31504946" auto-validate></cbn-cif-input>
 				<cbn-cif-input name="cif_disc" label="Discover" value="31504947" auto-validate></cbn-cif-input>
-				<cbn-cif-input name="cif_invalid" label="Invalid Discover Card" value="RO 31504946" auto-validate></cbn-cif-input>
-			</div>
-		</form>
-		
-		<p style="font-weight: bold;">Output: </p>
-		<pre id="stringifiedJson"></pre>
-		
-	</template>
+				<cbn-cif-input name="cif_invalid" label="Invalid Discover Card" value="RO 31504946"
+							   auto-validate></cbn-cif-input>
+			</template>
+		</demo-snippet>
+		<br/>
+	</form>
+
+	<p style="font-weight: bold;">Output: </p>
+	<pre id="stringifiedJson"></pre>
+
 </div>
 
 <script>
 	var tpl = document.querySelector('template[is=dom-bind]');
+	var form = document.querySelector('form[is=cbn-form]');
+	var output = document.getElementById('stringifiedJson');
 	
-	tpl.addEventListener('dom-change', function() {
+	tpl.addEventListener('dom-change', function () {
 		/** @namespace tpl.$.demoForm */
-		var form = tpl.$.demoForm;
-		
+
 		function updateOutput() {
 			/** @namespace tpl.$.stringifiedJson */
-			tpl.$.stringifiedJson.textContent = JSON.stringify(form.model, null, 4);
+			output.textContent = JSON.stringify(form.model, null, 4);
 		}
-		
+
 		form.addEventListener('value-changed', updateOutput);
-		form.addEventListener('cbn-cif-response', function(event) {
+		form.addEventListener('cbn-cif-response', function (event) {
 			console.log('cbn-cif response received!', event.detail);
 		});
 		updateOutput();
